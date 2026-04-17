@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Limitless AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="backdrop" id="backdrop" hidden></div>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark">L</div>
+        <div>
+          <p class="eyebrow">Browser-first AI workspace</p>
+          <h1>Limitless AI</h1>
+        </div>
+      </div>
+
+      <button class="accent-button" id="newChatButton" type="button">New chat</button>
+
+      <nav class="sidebar-nav">
+        <button class="nav-button active" type="button" data-section="files">
+          <strong>Files</strong>
+          <span>Upload PDFs, DOCX, text, and images</span>
+        </button>
+        <button class="nav-button" type="button" data-section="search">
+          <strong>Search</strong>
+          <span>Basic web lookups and summaries</span>
+        </button>
+        <button class="nav-button" type="button" data-section="builders">
+          <strong>Custom GPTs</strong>
+          <span>Save your own assistant instructions locally</span>
+        </button>
+        <button class="nav-button" type="button" data-section="agents">
+          <strong>Agents</strong>
+          <span>Run simple multi-step research and planning flows</span>
+        </button>
+        <button class="nav-button" type="button" data-section="settings">
+          <strong>Local Data</strong>
+          <span>Export, import, and privacy controls</span>
+        </button>
+      </nav>
+
+      <section class="sidebar-card">
+        <div class="section-heading">
+          <p class="section-label">Recent chats</p>
+          <span class="pill" id="chatCountBadge">0</span>
+        </div>
+        <div class="chat-list" id="chatList"></div>
+      </section>
+
+      <section class="sidebar-card">
+        <p class="section-label">Quick toggles</p>
+        <label class="toggle-row">
+          <input id="webSearchToggle" type="checkbox">
+          <span>Use web search inside chat</span>
+        </label>
+        <label class="toggle-row">
+          <input id="autoSpeakToggle" type="checkbox">
+          <span>Read replies aloud</span>
+        </label>
+        <label class="toggle-row">
+          <input id="localOnlyToggle" type="checkbox">
+          <span>Local fallback only</span>
+        </label>
+      </section>
+    </aside>
+
+    <div class="main-stack">
+      <header class="topbar">
+        <div class="topbar-copy">
+          <button class="icon-button mobile-only" id="mobileNavToggle" type="button" aria-label="Open navigation">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+          <div>
+            <p class="eyebrow">No login. No payments. Local-first.</p>
+            <h2 id="chatTitle">Welcome to Limitless AI</h2>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <label class="selector-card">
+            <span>Assistant</span>
+            <select id="assistantPicker"></select>
+          </label>
+          <span class="badge success">Local storage</span>
+          <span class="badge">Free-first stack</span>
+          <span class="badge" id="statusBadge">Ready</span>
+        </div>
+      </header>
+
+      <section class="hero-strip">
+        <article class="metric-card">
+          <span id="heroChatMetric">0</span>
+          <small>Saved chats</small>
+        </article>
+        <article class="metric-card">
+          <span id="heroFileMetric">0</span>
+          <small>Indexed files</small>
+        </article>
+        <article class="metric-card">
+          <span id="heroAgentMetric">Research Scout</span>
+          <small>Active agent</small>
+        </article>
+        <article class="metric-card">
+          <span id="heroModeMetric">Chat</span>
+          <small>Current mode</small>
+        </article>
+      </section>
+
+      <div class="workspace-grid">
+        <main class="chat-panel">
+          <div class="panel-head">
+            <div>
+              <p class="section-label">Conversation</p>
+              <h3>ChatGPT-style workspace with local memory</h3>
+            </div>
+            <p class="panel-note" id="statusLine">Upload files, ask questions, generate images, or run an agent.</p>
+          </div>
+
+          <section class="intro-panel" id="introPanel">
+            <div class="intro-copy">
+              <p class="section-label">Built for flexible AI workflows</p>
+              <h3>One interface for chat, documents, voice, image generation, and lightweight agents.</h3>
+              <p>
+                Limitless AI keeps chats, files, custom assistants, and settings in your browser.
+                Free online providers are used where available, with local fallbacks when they are not.
+              </p>
+            </div>
+
+            <div class="quick-actions" id="quickSuggestionList">
+              <button class="ghost-button" type="button" data-suggestion="Summarize the main ideas from my uploaded files.">Summarize my files</button>
+              <button class="ghost-button" type="button" data-suggestion="Research the history of CRISPR and turn it into a short brief.">Run a research brief</button>
+              <button class="ghost-button" type="button" data-suggestion="Generate an image of a futuristic Nordic AI workspace.">Create an image</button>
+              <button class="ghost-button" type="button" data-suggestion="Turn my idea into a launch plan with milestones.">Plan a launch</button>
+            </div>
+          </section>
+
+          <section class="message-stream" id="messageStream" hidden></section>
+
+          <form class="composer" id="composerForm">
+            <div class="composer-toolbar">
+              <button class="ghost-button" id="composerUploadButton" type="button">Upload files</button>
+              <button class="ghost-button" id="voiceButton" type="button">Voice input</button>
+              <div class="mode-switch" id="modeSwitch">
+                <button class="mode-button active" type="button" data-mode="chat">Chat</button>
+                <button class="mode-button" type="button" data-mode="search">Search</button>
+                <button class="mode-button" type="button" data-mode="image">Image</button>
+                <button class="mode-button" type="button" data-mode="agent">Agent</button>
+              </div>
+            </div>
+
+            <div class="pending-strip" id="pendingFileStrip" hidden></div>
+
+            <label class="composer-input-wrap" for="promptInput">
+              <textarea
+                id="promptInput"
+                rows="1"
+                placeholder="Ask anything, search with context, generate an image, or delegate a multi-step task..."
+              ></textarea>
+            </label>
+
+            <div class="composer-footer">
+              <p class="composer-note" id="composerNote">Using free browser speech APIs, public AI endpoints, and local browser storage.</p>
+              <button class="accent-button" id="sendButton" type="submit">Send</button>
+            </div>
+          </form>
+        </main>
+
+        <aside class="tool-rail">
+          <section class="tool-panel active" data-panel="files">
+            <div class="panel-head sticky">
+              <div>
+                <p class="section-label">File library</p>
+                <h3>Extract text into local context</h3>
+              </div>
+              <button class="ghost-button" id="fileUploadTrigger" type="button">Add files</button>
+            </div>
+            <p class="panel-note" id="fileUsageSummary">No files uploaded yet.</p>
+            <div class="panel-scroll" id="libraryList"></div>
+          </section>
+
+          <section class="tool-panel" data-panel="search">
+            <div class="panel-head sticky">
+              <div>
+                <p class="section-label">Web search</p>
+                <h3>Basic public web briefs</h3>
+              </div>
+              <button class="ghost-button" id="useSearchInChatButton" type="button">Use in next chat</button>
+            </div>
+
+            <form class="stack-form" id="searchForm">
+              <input class="text-input" id="searchInput" type="search" placeholder="Search a topic for quick context">
+              <button class="accent-button" type="submit">Search</button>
+            </form>
+
+            <article class="summary-card" id="searchSummary">
+              <p class="muted">Search summaries will appear here.</p>
+            </article>
+
+            <div class="panel-scroll" id="searchResults"></div>
+          </section>
+
+          <section class="tool-panel" data-panel="builders">
+            <div class="panel-head sticky">
+              <div>
+                <p class="section-label">Custom GPT builder</p>
+                <h3>Save instructions locally</h3>
+              </div>
+            </div>
+
+            <div class="panel-scroll">
+              <div class="card-list" id="assistantList"></div>
+
+              <form class="stack-form builder-form" id="assistantForm">
+                <input id="assistantIdInput" type="hidden">
+                <div class="section-heading">
+                  <p class="section-label">Builder editor</p>
+                  <button class="ghost-button" id="cancelAssistantEditButton" type="button" hidden>Cancel</button>
+                </div>
+                <input class="text-input" id="assistantNameInput" type="text" placeholder="Assistant name">
+                <input class="text-input" id="assistantDescriptionInput" type="text" placeholder="Short description">
+                <textarea class="text-area" id="assistantInstructionsInput" rows="7" placeholder="Write the instructions this assistant should follow..."></textarea>
+                <button class="accent-button" type="submit">Save assistant</button>
+              </form>
+            </div>
+          </section>
+
+          <section class="tool-panel" data-panel="agents">
+            <div class="panel-head sticky">
+              <div>
+                <p class="section-label">Simple agents</p>
+                <h3>Run chained tasks</h3>
+              </div>
+            </div>
+
+            <div class="panel-scroll">
+              <div class="card-list" id="agentList"></div>
+
+              <form class="stack-form" id="agentGoalForm">
+                <input class="text-input" id="agentGoalInput" type="text" placeholder="Give the active agent a goal">
+                <button class="accent-button" type="submit">Run active agent</button>
+              </form>
+
+              <div class="card-list" id="agentRuns"></div>
+            </div>
+          </section>
+
+          <section class="tool-panel" data-panel="settings">
+            <div class="panel-head sticky">
+              <div>
+                <p class="section-label">Local controls</p>
+                <h3>Export, import, and privacy</h3>
+              </div>
+            </div>
+
+            <div class="panel-scroll card-list">
+              <article class="settings-card">
+                <h4>Export chats</h4>
+                <p>Download your saved chats as JSON, including local citations and generated images.</p>
+                <button class="ghost-button" id="exportChatsButton" type="button">Export chats</button>
+              </article>
+
+              <article class="settings-card">
+                <h4>Export full workspace</h4>
+                <p>Save chats, files, assistants, settings, and agent runs into one portable backup.</p>
+                <button class="ghost-button" id="exportWorkspaceButton" type="button">Export workspace</button>
+              </article>
+
+              <article class="settings-card">
+                <h4>Import workspace</h4>
+                <p>Restore a previous backup from your browser without any server or account.</p>
+                <button class="ghost-button" id="importWorkspaceButton" type="button">Import JSON</button>
+              </article>
+
+              <article class="settings-card">
+                <h4>Privacy model</h4>
+                <p>
+                  Data is stored locally in your browser. Free public providers can be used for chat and image generation unless
+                  local-only mode is enabled.
+                </p>
+              </article>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <input id="hiddenFileInput" type="file" accept=".pdf,.docx,.txt,image/*" multiple hidden>
+  <input id="importInput" type="file" accept="application/json" hidden>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js" defer></script>
+  <script src="app.js" defer></script>
+</body>
+</html>
